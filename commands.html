@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>化学工具 · 命令页</title>
+    <!-- 功能区按钮的后台页：ShowTaskpane 动作本身不需要 JS，
+         这里只挂一个空的初始化回调，避免 Office 加载时报错。 -->
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  </head>
+  <body>
+    <script>
+      if (typeof Office !== "undefined") {
+        Office.onReady(function () {});
+      }
+    </script>
+  </body>
+</html>

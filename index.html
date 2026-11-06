@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>化学工具 · 化学式与结构式</title>
+    <!-- Office.js 必须最先加载，且不可被打包 -->
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <link rel="icon" href="/assets/icon-32.png" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Ketcher 及其依赖里残留 Node 的 process / global 引用，
+      // 浏览器里补一个最小垫片，须在模块脚本之前执行。
+      window.process =
+        window.process ||
+        {
+          env: { NODE_ENV: "production" },
+          platform: "browser",
+          browser: true,
+          argv: [],
+          version: "",
+          cwd: function () {
+            return "/";
+          },
+          nextTick: function (fn) {
+            setTimeout(fn, 0);
+          },
+        };
+      window.global = window.global || window;
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

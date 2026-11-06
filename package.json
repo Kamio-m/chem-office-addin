@@ -1,0 +1,41 @@
+{
+  "name": "chem-office-addin",
+  "version": "1.4.0",
+  "private": true,
+  "description": "化学式与结构图 Office 加载项，一个清单同时支持 Word / Excel / PowerPoint",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "certs": "office-addin-dev-certs install",
+    "sideload": "office-addin-dev-settings register manifest.xml",
+    "unload": "office-addin-dev-settings unregister manifest.xml",
+    "open:word": "office-addin-dev-settings sideload manifest.xml -a Word",
+    "open:excel": "office-addin-dev-settings sideload manifest.xml -a Excel",
+    "open:ppt": "office-addin-dev-settings sideload manifest.xml -a PowerPoint",
+    "icons": "node scripts/make-icons.mjs",
+    "exe": "node launcher/build.mjs",
+    "dev:launcher": "node launcher/server.cjs"
+  },
+  "dependencies": {
+    "ketcher-core": "^3.18.0",
+    "ketcher-react": "^3.18.0",
+    "ketcher-standalone": "^3.18.0",
+    "process": "^0.11.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/office-js": "^1.0.377",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "office-addin-dev-certs": "^3.0.1",
+    "office-addin-dev-settings": "^4.0.1",
+    "postject": "^1.0.0-alpha.6",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}

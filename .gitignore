@@ -1,0 +1,22 @@
+# 依赖
+node_modules/
+
+# 构建产物
+dist/
+
+# 打包产物（体积 100 MB+，用 GitHub Releases 分发，不进仓库）
+*.exe
+
+# 本地自签证书：.key 是私钥，绝不能提交
+launcher/cert/*.crt
+launcher/cert/*.key
+
+# 日志与系统杂项
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 编辑器
+.vscode/
+.idea/
