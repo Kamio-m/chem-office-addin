@@ -400,7 +400,7 @@ chem-office-addin/
 ├── launcher/
 │   ├── server.cjs          一体化启动器：https 静态服务 + 证书 + Office 注册 + 控制台菜单
 │   ├── build.mjs           Node SEA 打包脚本（前端 + 启动器 + 清单 + 证书 → 单个 exe）
-│   └── cert/               内置自签证书（仅 localhost，首次运行会加入用户受信任根）
+│   └── cert/               内置自签证书（可选，仓库不提交 .key；缺失时回落到系统证书）
 ├── public/assets/          清单要求的图标（由 npm run icons 生成）
 ├── scripts/
 │   ├── make-icons.mjs      零依赖生成 icon-32 / icon-80
