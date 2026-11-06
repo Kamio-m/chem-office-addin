@@ -56,8 +56,12 @@ mkdirSync(BUILD, { recursive: true });
 // 3. 收集资源
 const assets = {};
 for (const file of walk(DIST)) assets[file.rel] = file.full;
-assets["cert/localhost.crt"] = path.join(ROOT, "launcher", "cert", "localhost.crt");
-assets["cert/localhost.key"] = path.join(ROOT, "launcher", "cert", "localhost.key");
+// 内置自签证书是可选项：仓库不提交证书（.key 是私钥），别人 clone 后必然缺失。
+// 缺了就跳过——运行期会回落到 office-addin-dev-certs 装进系统的那套证书。
+for (const name of ["localhost.crt", "localhost.key"]) {
+  const p = path.join(ROOT, "launcher", "cert", name);
+  if (existsSync(p)) assets[`cert/${name}`] = p;
+}
 
 // 每次打包给任务窗格 URL 加一个版本号，强制 Office 重新加载（否则旧页面会一直缓存）
 const stamp = new Date().toLocaleString("sv-SE").slice(0, 16).replace(/[-: ]/g, "");
