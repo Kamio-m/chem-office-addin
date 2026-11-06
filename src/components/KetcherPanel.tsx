@@ -320,24 +320,10 @@ export default function KetcherPanel({ host, notify }: Props) {
     const ketcher = ketcherRef.current;
     if (!ketcher) throw new Error("编辑器还没准备好");
 
-    // 首选：结构化导出——KET 交给 Indigo 渲染。
-    // 与画布视口完全无关：只渲染结构本身，不存在「截到视口外内容」或
-    // 「滚动条/网格混入」的问题，内容永远完整、排版规整。
-    try {
-      const ket: string = await ketcher.getKet();
-      if (ket && ket.trim().length > 20) {
-        const blob: Blob = await ketcher.generateImage(ket, {
-          outputFormat: "png",
-          backgroundColor: "255,255,255",
-        });
-        const out = await blobToFinal(blob);
-        if (out) return out;
-      }
-    } catch {
-      /* 落到下面的兜底链路 */
-    }
-
-    // 兜底一：RXN / MOL / SMILES 交给 Indigo
+    // 优先 MOL / RXN，而不是 KET。
+    // KET 里存着 Ketcher 自己的原子序号，Indigo 渲染时会把这些序号
+    // 当成原子标签画出来——导出的图上会出现一堆 #6 #8 #12。
+    // MOL/RXN 是标准格式，只有连接关系，不带这些内部标记。
     let structStr = "";
     try {
       const rxn = await ketcher.getRxn();
@@ -353,8 +339,16 @@ export default function KetcherPanel({ host, notify }: Props) {
         /* 继续 */
       }
     }
-    if (!structStr) structStr = await ketcher.getSmiles();
-    if (structStr && structStr.trim()) {
+    if (!structStr) {
+      try {
+        const smiles = await ketcher.getSmiles();
+        if (smiles && smiles.trim()) structStr = smiles;
+      } catch {
+        /* 继续 */
+      }
+    }
+
+    if (structStr) {
       try {
         const blob: Blob = await ketcher.generateImage(structStr, {
           outputFormat: "png",
@@ -363,8 +357,23 @@ export default function KetcherPanel({ host, notify }: Props) {
         const out = await blobToFinal(blob);
         if (out) return out;
       } catch {
-        /* 落到画布快照 */
+        /* 落到下面的兜底 */
       }
+    }
+
+    // 兜底一：KET（手绘标注这类内容只有 KET 能完整保留）
+    try {
+      const ket: string = await ketcher.getKet();
+      if (ket && ket.trim().length > 20) {
+        const blob: Blob = await ketcher.generateImage(ket, {
+          outputFormat: "png",
+          backgroundColor: "255,255,255",
+        });
+        const out = await blobToFinal(blob);
+        if (out) return out;
+      }
+    } catch {
+      /* 落到画布快照 */
     }
 
     // 兜底二：画布快照

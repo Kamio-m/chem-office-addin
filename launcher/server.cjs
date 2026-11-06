@@ -194,9 +194,19 @@ function unregister() {
 const suggestCache = new Map(); // q -> { at, items }
 const SUGGEST_TTL = 10 * 60 * 1000;
 
+// WPS 加载项是 file:// 页面，跨域访问本服务时 Origin 是 "null"，
+// 所以这里统一放开 CORS，它才能直接用同一个识别接口。
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Private-Network": "true",
+};
+
 function json(res, status, payload) {
   const body = JSON.stringify(payload);
   res.writeHead(status, {
+    ...CORS_HEADERS,
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
     "Content-Length": Buffer.byteLength(body),
@@ -471,6 +481,13 @@ async function handleOnlineOcr(pngBase64) {
 
 function createServer(credentials) {
   return https.createServer({ key: credentials.key, cert: credentials.cert }, (req, res) => {
+    // CORS 预检
+    if (req.method === "OPTIONS") {
+      res.writeHead(204, CORS_HEADERS);
+      res.end();
+      return;
+    }
+
     let urlPath;
     let search = "";
     try {
