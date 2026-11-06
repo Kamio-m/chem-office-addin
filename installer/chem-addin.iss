@@ -40,6 +40,10 @@ Source: "修复加载项.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "启动服务.vbs"; DestDir: "{app}"; Flags: ignoreversion
 Source: "tray.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "启动托盘.vbs"; DestDir: "{app}"; Flags: ignoreversion
+; 许可证与第三方组件声明（本项目 MIT；内含 Ketcher / Indigo 等 Apache-2.0 组件）
+Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\THIRD-PARTY-NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\licenses\Apache-2.0.txt"; DestDir: "{app}\licenses"; Flags: ignoreversion
 
 [InstallDelete]
 ; 清理旧版本遗留、现在已不再使用的文件（升级时自动删掉，避免安装目录越堆越乱）

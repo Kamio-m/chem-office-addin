@@ -434,12 +434,32 @@ async function fetchOsraMol(fid, index) {
   return mol;
 }
 
+/*
+ * 本地限流：这个功能依赖 NCI 的公共服务，不是给人当批量接口用的。
+ * 每分钟最多 5 次——正常手点根本到不了，但能挡住脚本刷。
+ */
+const OCR_RATE_LIMIT = 5;
+const OCR_RATE_WINDOW = 60 * 1000;
+let ocrHits = [];
+
+function checkOcrRate() {
+  const now = Date.now();
+  ocrHits = ocrHits.filter((t) => now - t < OCR_RATE_WINDOW);
+  if (ocrHits.length >= OCR_RATE_LIMIT) {
+    const wait = Math.ceil((OCR_RATE_WINDOW - (now - ocrHits[0])) / 1000);
+    throw new Error(`识别太频繁了，请 ${wait} 秒后再试`);
+  }
+  ocrHits.push(now);
+}
+
 async function handleOnlineOcr(pngBase64) {
   const raw = String(pngBase64 || "").replace(/^data:image\/\w+;base64,/, "");
   if (!raw) throw new Error("没有收到图片");
   const buf = Buffer.from(raw, "base64");
   if (!buf.length) throw new Error("图片解码失败");
   if (buf.length > 8 * 1024 * 1024) throw new Error("图片太大（超过 8MB），先裁剪一下");
+
+  checkOcrRate();
 
   const fid = await submitOsraJob(buf);
   const count = await waitOsraDone(fid, Date.now() + OSRA_TIMEOUT_MS);
